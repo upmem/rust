@@ -1,0 +1,17 @@
+error[E0277]: the trait bound `(): MyTrait` is not satisfied
+  --> $DIR/reservation-impl-no-use.rs:12:5
+   |
+LL |     <() as MyTrait>::foo(&());
+   |     ^^^^^^^^^^^^^^^^^^^^ the trait `MyTrait` is not implemented for `()`
+   |
+   = help: the following implementations were found:
+             <() as MyTrait>
+note: required by `MyTrait::foo`
+  --> $DIR/reservation-impl-no-use.rs:7:17
+   |
+LL | trait MyTrait { fn foo(&self); }
+   |                 ^^^^^^^^^^^^^^
+
+error: aborting due to previous error
+
+For more information about this error, try `rustc --explain E0277`.

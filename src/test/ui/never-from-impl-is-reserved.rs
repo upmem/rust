@@ -8,3 +8,5 @@ pub trait MyTrait {}
 impl MyTrait for MyFoo {}
 // This will conflict with the first impl if we impl `for<T> T: From<!>`.
 impl<T> MyTrait for T where T: From<!> {} //~ ERROR conflicting implementation
+
+fn main() {}
