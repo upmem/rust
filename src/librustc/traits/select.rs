@@ -50,6 +50,8 @@ use std::iter;
 use std::rc::Rc;
 use crate::util::nodemap::{FxHashMap, FxHashSet};
 
+use syntax::symbol::sym;
+
 pub struct SelectionContext<'cx, 'tcx> {
     infcx: &'cx InferCtxt<'cx, 'tcx>,
 
@@ -1325,8 +1327,8 @@ impl<'cx, 'tcx> SelectionContext<'cx, 'tcx> {
         (result, dep_node)
     }
 
-    // Treat negative impls as unimplemented
-    fn filter_negative_impls(
+    // Treat negative impls as unimplemented, and reservation impls as Ok(None)
+    fn filter_negative_and_reservation_impls(
         &self,
         candidate: SelectionCandidate<'tcx>,
     ) -> SelectionResult<'tcx, SelectionCandidate<'tcx>> {
@@ -1335,6 +1337,10 @@ impl<'cx, 'tcx> SelectionContext<'cx, 'tcx> {
                 && self.tcx().impl_polarity(def_id) == hir::ImplPolarity::Negative
             {
                 return Err(Unimplemented);
+            }
+
+            if self.tcx().has_attr(def_id, sym::rustc_reservation_impl) {
+                return Ok(None);
             }
         }
         Ok(Some(candidate))
@@ -1452,7 +1458,7 @@ impl<'cx, 'tcx> SelectionContext<'cx, 'tcx> {
         // Instead, we select the right impl now but report `Bar does
         // not implement Clone`.
         if candidates.len() == 1 {
-            return self.filter_negative_impls(candidates.pop().unwrap());
+            return self.filter_negative_and_reservation_impls(candidates.pop().unwrap());
         }
 
         // Winnow, but record the exact outcome of evaluation, which
@@ -1527,7 +1533,7 @@ impl<'cx, 'tcx> SelectionContext<'cx, 'tcx> {
         }
 
         // Just one candidate left.
-        self.filter_negative_impls(candidates.pop().unwrap().candidate)
+        self.filter_negative_and_reservation_impls(candidates.pop().unwrap().candidate)
     }
 
     fn is_knowable<'o>(&mut self, stack: &TraitObligationStack<'o, 'tcx>) -> Option<Conflict> {
@@ -3724,6 +3730,13 @@ impl<'cx, 'tcx> SelectionContext<'cx, 'tcx> {
 
         if let Err(e) = self.infcx.leak_check(false, &placeholder_map, snapshot) {
             debug!("match_impl: failed leak check due to `{}`", e);
+            return Err(());
+        }
+
+        if self.intercrate.is_none() &&
+            self.tcx().has_attr(impl_def_id, sym::rustc_reservation_impl)
+        {
+            debug!("match_impl: reservation impls only apply in intercrate mode");
             return Err(());
         }
 

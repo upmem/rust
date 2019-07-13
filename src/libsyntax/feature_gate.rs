@@ -1276,6 +1276,11 @@ pub const BUILTIN_ATTRIBUTES: &[BuiltinAttribute] = &[
                                                     attribute is just used for rustc unit \
                                                     tests and will never be stable",
                                                     cfg_fn!(rustc_attrs))),
+    (sym::rustc_reservation_impl, Normal, template!(Word), Gated(Stability::Unstable,
+                                                                 sym::rustc_attrs,
+                                                                 "internal rustc attributes \
+                                                                  will never be stable",
+                                    cfg_fn!(rustc_attrs))),
     (sym::rustc_test_marker, Normal, template!(Word), Gated(Stability::Unstable,
                                     sym::rustc_attrs,
                                     "the `#[rustc_test_marker]` attribute \

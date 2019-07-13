@@ -551,6 +551,12 @@ impl<T> From<T> for T {
     fn from(t: T) -> T { t }
 }
 
+#[stable(feature = "convert_infallible", since = "1.34.0")]
+#[cfg(not(bootstrap))]
+#[rustc_reservation_impl]
+impl<T> From<!> for T {
+    fn from(t: !) -> T { t }
+}
 
 // TryFrom implies TryInto
 #[stable(feature = "try_from", since = "1.34.0")]
