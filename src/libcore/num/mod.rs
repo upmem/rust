@@ -4,7 +4,7 @@
 
 #![stable(feature = "rust1", since = "1.0.0")]
 
-use crate::convert::{TryFrom, Infallible};
+use crate::convert::{TryFrom};
 use crate::fmt;
 use crate::intrinsics;
 use crate::mem;
@@ -4671,13 +4671,6 @@ impl TryFromIntError {
 impl fmt::Display for TryFromIntError {
     fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
         self.__description().fmt(fmt)
-    }
-}
-
-#[stable(feature = "try_from", since = "1.34.0")]
-impl From<Infallible> for TryFromIntError {
-    fn from(x: Infallible) -> TryFromIntError {
-        match x {}
     }
 }
 
