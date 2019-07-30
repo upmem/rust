@@ -310,6 +310,8 @@ pub(super) fn specialization_graph_provider(
             };
 
             if let Some(overlap) = overlap {
+                debug!("found conflicting implementations {:?}", overlap);
+
                 let msg = format!("conflicting implementations of trait `{}`{}:{}",
                     overlap.trait_desc,
                     overlap.self_desc.clone().map_or(

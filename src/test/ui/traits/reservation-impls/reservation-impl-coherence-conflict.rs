@@ -4,11 +4,11 @@
 
 #![feature(rustc_attrs)]
 
-trait MyTrait {}
+pub trait MyTrait {}
 #[rustc_reservation_impl="this impl is reserved"]
 impl MyTrait for () {}
 
-trait OtherTrait {}
+pub trait OtherTrait {}
 impl OtherTrait for () {}
 impl<T: MyTrait> OtherTrait for T {}
 //~^ ERROR conflicting implementations
