@@ -92,6 +92,10 @@ fn main() {
     if major > 6 {
         optional_components.push("riscv");
     }
+    
+    if major > 7 {
+        optional_components.push("dpu");
+    }
 
     // FIXME: surely we don't need all these components, right? Stuff like mcjit
     //        or interpreter the compiler itself never uses.
