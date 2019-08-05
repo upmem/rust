@@ -6,6 +6,7 @@ mod aarch64;
 mod amdgpu;
 mod arm;
 mod asmjs;
+mod dpu;
 mod hexagon;
 mod mips;
 mod mips64;
@@ -581,6 +582,7 @@ impl<'a, Ty> FnType<'a, Ty> {
             "hexagon" => hexagon::compute_abi_info(self),
             "riscv32" => riscv::compute_abi_info(self, 32),
             "riscv64" => riscv::compute_abi_info(self, 64),
+            "dpu" => dpu::compute_abi_info(self),
             a => return Err(format!("unrecognized arch \"{}\" in target specification", a))
         }
 
