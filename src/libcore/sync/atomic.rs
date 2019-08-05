@@ -2049,15 +2049,15 @@ atomic_int! {
     "AtomicU128::new(0)",
     u128 AtomicU128 ATOMIC_U128_INIT
 }
-#[cfg(target_pointer_width = "16")]
+#[cfg(all(target_pointer_width = "16", target_has_atomic = "ptr"))]
 macro_rules! ptr_width {
     () => { 2 }
 }
-#[cfg(target_pointer_width = "32")]
+#[cfg(all(target_pointer_width = "32", target_has_atomic = "ptr"))]
 macro_rules! ptr_width {
     () => { 4 }
 }
-#[cfg(target_pointer_width = "64")]
+#[cfg(all(target_pointer_width = "64", target_has_atomic = "ptr"))]
 macro_rules! ptr_width {
     () => { 8 }
 }
