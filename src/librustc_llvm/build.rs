@@ -103,6 +103,10 @@ fn main() {
         optional_components.push("riscv");
     }
 
+    if major >= 10 {
+        optional_components.push("dpu");
+    }
+
     let required_components =
         &["ipo", "bitreader", "bitwriter", "linker", "asmparser", "lto", "instrumentation"];
 
