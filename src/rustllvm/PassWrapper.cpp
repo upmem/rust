@@ -174,6 +174,12 @@ void LLVMRustAddLastExtensionPasses(
 #define SUBTARGET_HEXAGON
 #endif
 
+#ifdef LLVM_COMPONENT_DPU
+#define SUBTARGET_DPU SUBTARGET(DPU)
+#else
+#define SUBTARGET_DPU
+#endif
+
 #define GEN_SUBTARGETS                                                         \
   SUBTARGET_X86                                                                \
   SUBTARGET_ARM                                                                \
@@ -185,6 +191,7 @@ void LLVMRustAddLastExtensionPasses(
   SUBTARGET_SPARC                                                              \
   SUBTARGET_HEXAGON                                                            \
   SUBTARGET_RISCV                                                              \
+  SUBTARGET_DPU                                                                \
 
 #define SUBTARGET(x)                                                           \
   namespace llvm {                                                             \

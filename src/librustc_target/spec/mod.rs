@@ -497,6 +497,8 @@ supported_targets! {
 
     ("nvptx64-nvidia-cuda", nvptx64_nvidia_cuda),
 
+    ("dpu-upmem-dpurte", dpu_upmem_dpurte),
+
     ("i686-wrs-vxworks", i686_wrs_vxworks),
     ("x86_64-wrs-vxworks", x86_64_wrs_vxworks),
     ("armv7-wrs-vxworks-eabihf", armv7_wrs_vxworks_eabihf),
