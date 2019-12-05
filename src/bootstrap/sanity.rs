@@ -174,7 +174,7 @@ pub fn check(build: &mut Build) {
             panic!("the iOS target is only supported on macOS");
         }
 
-        if target.contains("-none-") || target.contains("nvptx") {
+        if target.contains("-none-") || target.contains("nvptx") || target.contains("dpu") {
             if build.no_std(*target).is_none() {
                 let target = build.config.target_config.entry(target.clone())
                     .or_default();
@@ -183,7 +183,7 @@ pub fn check(build: &mut Build) {
             }
 
             if build.no_std(*target) == Some(false) {
-                panic!("All the *-none-* and nvptx* targets are no-std targets")
+                panic!("All the *-none-*, nvptx* and dpu* targets are no-std targets")
             }
         }
 
