@@ -185,9 +185,9 @@ pub fn check(build: &mut Build) {
 
         build.config.target_config.entry(target.clone()).or_insert(Target::from_triple(target));
 
-        if target.contains("-none-") || target.contains("nvptx") {
+        if target.contains("-none-") || target.contains("nvptx") || target.contains("dpu") {
             if build.no_std(*target) == Some(false) {
-                panic!("All the *-none-* and nvptx* targets are no-std targets")
+                panic!("All the *-none-*, nvptx* and dpu* targets are no-std targets")
             }
         }
 
