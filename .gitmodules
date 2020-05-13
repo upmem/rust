@@ -33,7 +33,8 @@
 	url = https://github.com/rust-lang/llvm.git
 [submodule "src/stdarch"]
 	path = src/stdarch
-	url = https://github.com/rust-lang/stdarch.git
+	url = https://github.com/upmem/stdarch.git
+	branch = upmem/rust-1.39.0
 [submodule "src/doc/rustc-guide"]
 	path = src/doc/rustc-guide
 	url = https://github.com/rust-lang/rustc-guide.git
