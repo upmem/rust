@@ -27,7 +27,8 @@
 	url = https://github.com/rust-lang/rust-by-example.git
 [submodule "src/stdarch"]
 	path = src/stdarch
-	url = https://github.com/rust-lang/stdarch.git
+	url = https://github.com/upmem/stdarch.git
+    branch = upmem/rust-1.45.2
 [submodule "src/doc/rustc-dev-guide"]
 	path = src/doc/rustc-dev-guide
 	url = https://github.com/rust-lang/rustc-dev-guide.git
