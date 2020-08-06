@@ -255,6 +255,7 @@ impl AsmBuilderMethods<'tcx> for Builder<'a, 'll, 'tcx> {
                 }
                 InlineAsmArch::RiscV32 | InlineAsmArch::RiscV64 => {}
                 InlineAsmArch::Nvptx64 => {}
+                InlineAsmArch::DPU => {}
             }
         }
         if !options.contains(InlineAsmOptions::NOMEM) {
@@ -427,6 +428,8 @@ fn reg_to_llvm(reg: InlineAsmRegOrRegClass) -> String {
             | InlineAsmRegClass::Arm(ArmInlineAsmRegClass::qreg_low4) => "x",
             InlineAsmRegClass::Arm(ArmInlineAsmRegClass::dreg)
             | InlineAsmRegClass::Arm(ArmInlineAsmRegClass::qreg) => "w",
+            InlineAsmRegClass::DPU(DpuInlineAsmRegClass::reg32) => "r",
+            InlineAsmRegClass::DPU(DpuInlineAsmRegClass::reg64) => "d",
             InlineAsmRegClass::Nvptx(NvptxInlineAsmRegClass::reg16) => "h",
             InlineAsmRegClass::Nvptx(NvptxInlineAsmRegClass::reg32) => "r",
             InlineAsmRegClass::Nvptx(NvptxInlineAsmRegClass::reg64) => "l",
@@ -472,6 +475,7 @@ fn modifier_to_llvm(
                 modifier
             }
         }
+        InlineAsmRegClass::DPU(_) => None,
         InlineAsmRegClass::Nvptx(_) => None,
         InlineAsmRegClass::RiscV(RiscVInlineAsmRegClass::reg)
         | InlineAsmRegClass::RiscV(RiscVInlineAsmRegClass::freg) => None,
@@ -523,6 +527,8 @@ fn dummy_output_type(cx: &CodegenCx<'ll, 'tcx>, reg: InlineAsmRegClass) -> &'ll 
         | InlineAsmRegClass::Arm(ArmInlineAsmRegClass::qreg_low4) => {
             cx.type_vector(cx.type_i64(), 2)
         }
+        InlineAsmRegClass::DPU(DpuInlineAsmRegClass::reg32) => cx.type_i32(),
+        InlineAsmRegClass::DPU(DpuInlineAsmRegClass::reg64) => cx.type_i64(),
         InlineAsmRegClass::Nvptx(NvptxInlineAsmRegClass::reg16) => cx.type_i16(),
         InlineAsmRegClass::Nvptx(NvptxInlineAsmRegClass::reg32) => cx.type_i32(),
         InlineAsmRegClass::Nvptx(NvptxInlineAsmRegClass::reg64) => cx.type_i64(),

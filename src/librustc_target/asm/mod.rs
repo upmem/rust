@@ -148,12 +148,14 @@ macro_rules! types {
 
 mod aarch64;
 mod arm;
+mod dpu;
 mod nvptx;
 mod riscv;
 mod x86;
 
 pub use aarch64::{AArch64InlineAsmReg, AArch64InlineAsmRegClass};
 pub use arm::{ArmInlineAsmReg, ArmInlineAsmRegClass};
+pub use dpu::{DpuInlineAsmReg, DpuInlineAsmRegClass};
 pub use nvptx::{NvptxInlineAsmReg, NvptxInlineAsmRegClass};
 pub use riscv::{RiscVInlineAsmReg, RiscVInlineAsmRegClass};
 pub use x86::{X86InlineAsmReg, X86InlineAsmRegClass};
@@ -167,6 +169,7 @@ pub enum InlineAsmArch {
     RiscV32,
     RiscV64,
     Nvptx64,
+    DPU,
 }
 
 impl FromStr for InlineAsmArch {
@@ -181,6 +184,7 @@ impl FromStr for InlineAsmArch {
             "riscv32" => Ok(Self::RiscV32),
             "riscv64" => Ok(Self::RiscV64),
             "nvptx64" => Ok(Self::Nvptx64),
+            "dpu" => Ok(Self::DPU),
             _ => Err(()),
         }
     }
@@ -203,6 +207,7 @@ pub enum InlineAsmReg {
     AArch64(AArch64InlineAsmReg),
     RiscV(RiscVInlineAsmReg),
     Nvptx(NvptxInlineAsmReg),
+    DPU(DpuInlineAsmReg),
 }
 
 impl InlineAsmReg {
@@ -212,6 +217,7 @@ impl InlineAsmReg {
             Self::Arm(r) => r.name(),
             Self::AArch64(r) => r.name(),
             Self::RiscV(r) => r.name(),
+            Self::DPU(r) => r.name(),
         }
     }
 
@@ -221,6 +227,7 @@ impl InlineAsmReg {
             Self::Arm(r) => InlineAsmRegClass::Arm(r.reg_class()),
             Self::AArch64(r) => InlineAsmRegClass::AArch64(r.reg_class()),
             Self::RiscV(r) => InlineAsmRegClass::RiscV(r.reg_class()),
+            Self::DPU(r) => InlineAsmRegClass::DPU(r.reg_class()),
         }
     }
 
@@ -246,6 +253,9 @@ impl InlineAsmReg {
             InlineAsmArch::Nvptx64 => {
                 Self::Nvptx(NvptxInlineAsmReg::parse(arch, has_feature, &name)?)
             }
+            InlineAsmArch::DPU => {
+                Self::DPU(DpuInlineAsmReg::parse(arch, has_feature, &name)?)
+            }
         })
     }
 
@@ -262,6 +272,7 @@ impl InlineAsmReg {
             Self::Arm(r) => r.emit(out, arch, modifier),
             Self::AArch64(r) => r.emit(out, arch, modifier),
             Self::RiscV(r) => r.emit(out, arch, modifier),
+            Self::DPU(r) => r.emit(out, arch, modifier),
         }
     }
 
@@ -271,6 +282,7 @@ impl InlineAsmReg {
             Self::Arm(r) => r.overlapping_regs(|r| cb(Self::Arm(r))),
             Self::AArch64(_) => cb(self),
             Self::RiscV(_) => cb(self),
+            Self::DPU(r) => r.overlapping_regs(|r| cb(Self::DPU(r))),
         }
     }
 }
@@ -292,6 +304,7 @@ pub enum InlineAsmRegClass {
     AArch64(AArch64InlineAsmRegClass),
     RiscV(RiscVInlineAsmRegClass),
     Nvptx(NvptxInlineAsmRegClass),
+    DPU(DpuInlineAsmRegClass),
 }
 
 impl InlineAsmRegClass {
@@ -302,6 +315,7 @@ impl InlineAsmRegClass {
             Self::AArch64(r) => r.name(),
             Self::RiscV(r) => r.name(),
             Self::Nvptx(r) => r.name(),
+            Self::DPU(r) => r.name(),
         }
     }
 
@@ -315,6 +329,7 @@ impl InlineAsmRegClass {
             Self::AArch64(r) => r.suggest_class(arch, ty).map(InlineAsmRegClass::AArch64),
             Self::RiscV(r) => r.suggest_class(arch, ty).map(InlineAsmRegClass::RiscV),
             Self::Nvptx(r) => r.suggest_class(arch, ty).map(InlineAsmRegClass::Nvptx),
+            Self::DPU(r) => r.suggest_class(arch, ty).map(InlineAsmRegClass::DPU),
         }
     }
 
@@ -335,6 +350,7 @@ impl InlineAsmRegClass {
             Self::AArch64(r) => r.suggest_modifier(arch, ty),
             Self::RiscV(r) => r.suggest_modifier(arch, ty),
             Self::Nvptx(r) => r.suggest_modifier(arch, ty),
+            Self::DPU(r) => r.suggest_modifier(arch, ty),
         }
     }
 
@@ -351,6 +367,7 @@ impl InlineAsmRegClass {
             Self::AArch64(r) => r.default_modifier(arch),
             Self::RiscV(r) => r.default_modifier(arch),
             Self::Nvptx(r) => r.default_modifier(arch),
+            Self::DPU(r) => r.default_modifier(arch),
         }
     }
 
@@ -366,6 +383,7 @@ impl InlineAsmRegClass {
             Self::AArch64(r) => r.supported_types(arch),
             Self::RiscV(r) => r.supported_types(arch),
             Self::Nvptx(r) => r.supported_types(arch),
+            Self::DPU(r) => r.supported_types(arch),
         }
     }
 
@@ -384,6 +402,7 @@ impl InlineAsmRegClass {
                     Self::RiscV(RiscVInlineAsmRegClass::parse(arch, name)?)
                 }
                 InlineAsmArch::Nvptx64 => Self::Nvptx(NvptxInlineAsmRegClass::parse(arch, name)?),
+                InlineAsmArch::DPU => Self::DPU(DpuInlineAsmRegClass::parse(arch, name)?),
             })
         })
     }
@@ -397,6 +416,7 @@ impl InlineAsmRegClass {
             Self::AArch64(r) => r.valid_modifiers(arch),
             Self::RiscV(r) => r.valid_modifiers(arch),
             Self::Nvptx(r) => r.valid_modifiers(arch),
+            Self::DPU(r) => r.valid_modifiers(arch),
         }
     }
 }
@@ -539,6 +559,11 @@ pub fn allocatable_registers(
         InlineAsmArch::Nvptx64 => {
             let mut map = nvptx::regclass_map();
             nvptx::fill_reg_map(arch, has_feature, &mut map);
+            map
+        }
+        InlineAsmArch::DPU => {
+            let mut map = dpu::regclass_map();
+            dpu::fill_reg_map(arch, has_feature, &mut map);
             map
         }
     }
